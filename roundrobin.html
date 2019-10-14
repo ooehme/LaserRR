@@ -8,7 +8,7 @@
 	</head>
 	<script>
 		$(document).ready(function(){
-		  var TEAMS = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6","Team 7","Team 8","Team 9"];
+		  var TEAMS = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6"];
 		  var half = Math.floor(TEAMS.length / 2)
 		  var oddTeamCount = ((TEAMS.length % 2) == 0) ? false : true;
 		  var TeamsA = TEAMS.slice(0, half);
@@ -29,7 +29,7 @@
 		  }
 
 		  function getRounds() {
-			for(var i = 0; i < TEAMS.length; i++) {
+			for(var i = 0; i < TEAMS.length - ((oddTeamCount) ? 0 : 1); i++) {
 			  Rounds[i] = [];
 			  for(var k = 0; k < TeamsA.length; k++) {
 				Rounds[i].push([TeamsA[k],TeamsB[k]]);
