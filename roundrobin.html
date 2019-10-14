@@ -1,0 +1,49 @@
+<html>
+	<head>
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	</head>
+	<script>
+		$(document).ready(function(){
+		  var TEAMS = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6"];
+		  var half = Math.floor(TEAMS.length / 2)
+		  var TeamsA = TEAMS.slice(0, half);
+		  var TeamsB = (TEAMS.reverse()).slice(0,half);
+
+		  var Rounds = [];
+
+		  function popNpush() {
+			var secondA = TeamsA[1];
+			var lastB = TeamsB[TeamsB.length-1];
+			TeamsA.splice(1, 1);
+			TeamsB.splice(TeamsB.length-1, 1);
+			TeamsA.push(lastB);
+			TeamsB.unshift(secondA);
+		  }
+
+		  function getRounds() {
+			for(var i = 0; i < TEAMS.length-1; i++) {
+			  Rounds[i] = [];
+			  for(var k = 0; k < TeamsA.length; k++) {
+				Rounds[i].push([TeamsA[k],TeamsB[k]]);
+			  }
+			  popNpush();
+			}
+		  }
+
+		  getRounds();
+		  
+		  $(Rounds).each(function(index){
+			var Round = this;
+			console.log("=== Round " + (index + 1) + " ===");
+			$(Round).each(function(){
+				var constallation = this;
+			  console.log(constallation[0] + " vs. " + constallation[1]);
+			});
+		  })
+		});
+	</script>
+</html>
