@@ -8,24 +8,28 @@
 	</head>
 	<script>
 		$(document).ready(function(){
-		  var TEAMS = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6"];
+		  var TEAMS = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6","Team 7","Team 8","Team 9"];
 		  var half = Math.floor(TEAMS.length / 2)
+		  var oddTeamCount = ((TEAMS.length % 2) == 0) ? false : true;
 		  var TeamsA = TEAMS.slice(0, half);
-		  var TeamsB = (TEAMS.reverse()).slice(0,half);
-
+		  var TeamsB = (TEAMS.reverse()).slice(0,half + ((oddTeamCount) ? 1:0));
+		  if(oddTeamCount) {
+			TeamsA.unshift("Pause");
+		  }
+		  
 		  var Rounds = [];
 
 		  function popNpush() {
 			var secondA = TeamsA[1];
 			var lastB = TeamsB[TeamsB.length-1];
 			TeamsA.splice(1, 1);
-			TeamsB.splice(TeamsB.length-1, 1);
 			TeamsA.push(lastB);
+			TeamsB.splice(TeamsB.length-1, 1);
 			TeamsB.unshift(secondA);
 		  }
 
 		  function getRounds() {
-			for(var i = 0; i < TEAMS.length-1; i++) {
+			for(var i = 0; i < TEAMS.length; i++) {
 			  Rounds[i] = [];
 			  for(var k = 0; k < TeamsA.length; k++) {
 				Rounds[i].push([TeamsA[k],TeamsB[k]]);
@@ -38,7 +42,7 @@
 		  
 		  $(Rounds).each(function(index){
 			var Round = this;
-			console.log("=== Round " + (index + 1) + " ===");
+			console.log(" === Round " + (index + 1) + " ===");
 			$(Round).each(function(){
 				var constallation = this;
 			  console.log(constallation[0] + " vs. " + constallation[1]);
