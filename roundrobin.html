@@ -85,7 +85,7 @@
 				
 				$(Rounds).each(function(index){
 					var Round = this;					
-					var roundElement = $("<div class=\"list-group-item active\"><h3>heat " + (index + 1) + "</h3><span>" + (Round.length * roundlength) +" mins</span></div>");
+					var roundElement = $("<div class=\"list-group-item active\"><h3>heat " + (index + 1) + "</h3><span>" + ( ( oddTeamCount ? (Round.length - 1) : Round.length ) * roundlength )  + " mins</span></div>");
 					roundElement.appendTo( $( (((index + 1) % 2 == 0 )? "#evenRounds" : "#oddRounds")) )
 					$(Round).each(function(){
 						var opponents = this;
