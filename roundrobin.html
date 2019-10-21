@@ -1,53 +1,142 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 	<head>
-		<!-- Bootstrap -->
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-	</head>
-	<script>
-		$(document).ready(function(){
-		  var TEAMS = ["Team 1","Team 2","Team 3","Team 4","Team 5","Team 6"];
-		  var half = Math.floor(TEAMS.length / 2)
-		  var oddTeamCount = ((TEAMS.length % 2) == 0) ? false : true;
-		  var TeamsA = TEAMS.slice(0, half);
-		  var TeamsB = (TEAMS.reverse()).slice(0,half + ((oddTeamCount) ? 1:0));
-		  if(oddTeamCount) {
-			TeamsA.unshift("Pause");
-		  }
-		  
-		  var Rounds = [];
+		<title>tournament</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=0.5, user-scalable=no">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+		<script>
+			$(document).ready(function(){
+			  var TEAMS;
+			  var half;
+			  var oddTeamCount;
+			  var TeamsA;
+			  var TeamsB;			  
+			  var Rounds;
+			  
+			  var roundlength = 15; //round length in minutes
 
-		  function popNpush() {
-			var secondA = TeamsA[1];
-			var lastB = TeamsB[TeamsB.length-1];
-			TeamsA.splice(1, 1);
-			TeamsA.push(lastB);
-			TeamsB.splice(TeamsB.length-1, 1);
-			TeamsB.unshift(secondA);
-		  }
-
-		  function getRounds() {
-			for(var i = 0; i < TEAMS.length - ((oddTeamCount) ? 0 : 1); i++) {
-			  Rounds[i] = [];
-			  for(var k = 0; k < TeamsA.length; k++) {
-				Rounds[i].push([TeamsA[k],TeamsB[k]]);
+			  function popNpush() {
+				var secondA = TeamsA[1];
+				var lastB = TeamsB[TeamsB.length-1];
+				TeamsA.splice(1, 1);
+				TeamsA.push(lastB);
+				TeamsB.splice(TeamsB.length-1, 1);
+				TeamsB.unshift(secondA);
 			  }
-			  popNpush();
-			}
-		  }
+			  
+			  function getTeams(){
+				TEAMS = [];
+				half = 1;
+				oddTeamCount = false;
+				
+				var TextAreaContent = $("#TEAMS").val().trim().split('\n');
+				var listGroupTeams = $("#lstTeams");
+				listGroupTeams.empty();
+				
+				$(TextAreaContent).each(function(){
+					var teamName = this;
+					teamName = teamName.trim();
+					if(teamName != '') {
+						TEAMS.push(teamName);
+						$("<div class=\"list-group-item\">" + teamName + "</div>").appendTo(listGroupTeams);
+					}
+				});
+				
+				$("#headAddedTeams").text(((TEAMS.length == 0 )? "no": TEAMS.length) + " competitor" + ((TEAMS.length != 1 )? "s added": " added"));
+			  }
 
-		  getRounds();
-		  
-		  $(Rounds).each(function(index){
-			var Round = this;
-			console.log(" === Round " + (index + 1) + " ===");
-			$(Round).each(function(){
-				var constallation = this;
-			  console.log(constallation[0] + " vs. " + constallation[1]);
+			  function getRounds() {
+				
+				TeamsA = [];
+				TeamsB = [];			  
+				Rounds = [];
+				
+				getTeams();				
+				
+			    half = Math.floor(TEAMS.length / 2);
+				oddTeamCount = ((TEAMS.length % 2) == 0) ? false : true;
+				TeamsA = TEAMS.slice(0, half);
+				TeamsB = (TEAMS.reverse()).slice(0,half + ((oddTeamCount) ? 1:0));
+				if(oddTeamCount) {
+					TeamsA.unshift("Pause");
+				}
+				
+				for(var i = 0; i < TEAMS.length - ((oddTeamCount) ? 0 : 1); i++) {
+				  Rounds[i] = [];
+				  for(var k = 0; k < TeamsA.length; k++) {
+					Rounds[i].push([TeamsA[k],TeamsB[k]]);
+				  }
+				  popNpush();
+				}
+			  }
+
+			  $("#btnSave").click(function(event){
+			  	event.preventDefault();
+				
+				//generate rounds
+				getRounds();
+				
+				$("#oddRounds").empty();
+				$("#evenRounds").empty();
+				
+				$(Rounds).each(function(index){
+					var Round = this;					
+					var roundElement = $("<div class=\"list-group-item active\"><h3>heat " + (index + 1) + "</h3><span>" + (Round.length * roundlength) +" mins</span></div>");
+					roundElement.appendTo( $( (((index + 1) % 2 == 0 )? "#evenRounds" : "#oddRounds")) )
+					$(Round).each(function(){
+						var opponents = this;
+						if(opponents[0] != "Pause") {
+							$("<div class=\"list-group-item\"><span class=\"\"><strong>" + opponents[0] + "</strong></span> vs. <span class=\"\"><strong>" + opponents[1] + "</strong></span></div>").appendTo( $( (((index + 1) % 2 == 0 )? "#evenRounds" : "#oddRounds")) );
+						}
+					});
+				  })
+			  });
+			  
+			  
 			});
-		  })
-		});
-	</script>
+		</script>
+	</head>
+	<body>
+		<div class="jumbotron bg-primary text-white text-center rounded-0" style="margin-bottom:0">
+			<div class="row">
+				<div class="col-12">
+					<h1>tournament<br/><small>round robin</small></h1>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="row"> 
+				<div class="col-6">
+					<h2>competitors</h2>
+					<textarea id="TEAMS" class="md-textarea form-control" rows="10">
+Extended Happy Jackals
+Limping Death Pirates
+Atomic Net Mirage
+Latin Rats
+Tall Pixies
+Orange Ocean Summit
+					</textarea>
+					<a href="#" id="btnSave" class="btn btn-primary btn-block">add competitors</a>
+				</div>
+				<div class="col-6">
+					<h2 id="headAddedTeams">no competitors added</h2>
+					<div class="list-group" id="lstTeams"></div>
+				</div>
+			</div>
+			<hr/>
+			<h2></h2>
+			<div class="row">
+				<div class="col-6">
+					<div class="list-group" id="oddRounds"></div>
+				</div>
+				<div class="col-6">
+					<div class="list-group" id="evenRounds"></div>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
